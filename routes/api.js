@@ -61,6 +61,9 @@ router.post('/v1/screenshot', apiAuth, planLimiter, async (req, res) => {
     } catch (gotoErr) {
       if (!gotoErr.message.includes('timeout')) {
         await page.close();
+if (page._isPerRequest && page._browserInstance) {
+  await page._browserInstance.close().catch(() => {});
+}
         return res.status(500).json({ success: false, error: 'Failed to load the page.' });
       }
     }
@@ -82,6 +85,9 @@ router.post('/v1/screenshot', apiAuth, planLimiter, async (req, res) => {
     }
 
     await page.close();
+if (page._isPerRequest && page._browserInstance) {
+  await page._browserInstance.close().catch(() => {});
+}
 
     const tookMs = Date.now() - startMs;
     const shotId = uuidv4();

@@ -180,13 +180,19 @@ router.get('/api/screenshot', async (req, res) => {
     } catch (gotoErr) {
       if (!gotoErr.message.includes('timeout')) {
         await page.close();
+if (page._isPerRequest && page._browserInstance) {
+  await page._browserInstance.close().catch(() => {});
+}
         return res.status(500).json({ error: 'Failed to load the page.' });
       }
     }
 
     if (format === 'pdf') {
       const pdf = await page.pdf({ format: 'A4', printBackground: true });
-      await page.close();
+    await page.close();
+if (page._isPerRequest && page._browserInstance) {
+  await page._browserInstance.close().catch(() => {});
+}
       if (req.session?.userId) await incrementCount(req.session.userId);
       res.setHeader('Content-Type', 'application/pdf');
       return res.send(pdf);
@@ -217,7 +223,10 @@ router.get('/api/screenshot', async (req, res) => {
       ...(imgFormat === 'jpeg' && { quality: 90 }),
     });
 
-    await page.close();
+   await page.close();
+if (page._isPerRequest && page._browserInstance) {
+  await page._browserInstance.close().catch(() => {});
+}
     if (req.session?.userId) await incrementCount(req.session.userId);
 
     res.setHeader('Content-Type', `image/${imgFormat}`);

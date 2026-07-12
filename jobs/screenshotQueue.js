@@ -84,7 +84,10 @@ function startWorker() {
           ext = imgType === 'jpeg' ? 'jpg' : 'png';
         }
 
-        await page.close();
+     await page.close();
+if (page._isPerRequest && page._browserInstance) {
+  await page._browserInstance.close().catch(() => {});
+}
 
         // Upload to Cloudinary if configured
         let imageUrl = null;

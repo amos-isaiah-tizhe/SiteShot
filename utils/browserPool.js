@@ -50,10 +50,21 @@ let browserInstance = null;
 let browserLaunchPromise = null;
 logger.info(`Using Chrome at: ${CHROME_PATH}`);
 async function getBrowser() {
-  // Return existing healthy browser
+  // On Render free tier — always launch fresh to avoid OOM crashes
+  if (!isWindows && process.env.NODE_ENV === 'production') {
+    const browser = await puppeteer.launch({
+      headless: 'new',
+      executablePath: CHROME_PATH,
+      args: LAUNCH_ARGS,
+    });
+    logger.info('Browser launched (per-request mode)');
+    return browser;
+  }
+
+  // Local dev — reuse single instance
   if (browserInstance) {
     try {
-      await browserInstance.version(); // health check
+      await browserInstance.version();
       return browserInstance;
     } catch {
       logger.warn('Browser instance crashed, relaunching...');
@@ -61,7 +72,6 @@ async function getBrowser() {
     }
   }
 
-  // Prevent multiple simultaneous launches
   if (browserLaunchPromise) return browserLaunchPromise;
 
   browserLaunchPromise = puppeteer.launch({
@@ -72,13 +82,10 @@ async function getBrowser() {
     browserInstance = browser;
     browserLaunchPromise = null;
     logger.info('Browser instance launched');
-
-    // Auto-restart if browser crashes
     browser.on('disconnected', () => {
       logger.warn('Browser disconnected, will relaunch on next request');
       browserInstance = null;
     });
-
     return browser;
   }).catch(err => {
     browserLaunchPromise = null;
@@ -90,7 +97,12 @@ async function getBrowser() {
 
 async function createPage(width = 1440, height = 900) {
   const browser = await getBrowser();
-  const page = await browser.newPage();
+  const page    = await browser.newPage();
+  const isPerRequest = !isWindows && process.env.NODE_ENV === 'production';
+
+  // Attach browser to page so callers can close it in per-request mode
+  page._browserInstance   = browser;
+  page._isPerRequest      = isPerRequest;
 
   // Stealth settings
   await page.setUserAgent(USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)]);
