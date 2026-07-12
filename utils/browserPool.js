@@ -5,10 +5,26 @@ const logger = require('./logger');
 puppeteer.use(StealthPlugin());
 
 const isWindows = process.platform === 'win32';
-const CHROME_PATH = process.env.PUPPETEER_EXECUTABLE_PATH ||
-  (isWindows
-    ? 'C:\\Users\\USER\\.cache\\puppeteer\\chrome\\win64-150.0.7871.24\\chrome-win64\\chrome.exe'
-    : '/opt/render/project/.cache/puppeteer/chrome/linux-150.0.7871.24/chrome-linux64/chrome');
+
+function getChromePath() {
+  if (process.env.PUPPETEER_EXECUTABLE_PATH) {
+    return process.env.PUPPETEER_EXECUTABLE_PATH;
+  }
+  if (isWindows) {
+    return 'C:\\Users\\USER\\.cache\\puppeteer\\chrome\\win64-150.0.7871.24\\chrome-win64\\chrome.exe';
+  }
+  // Auto-find on Linux
+  const { execSync } = require('child_process');
+  try {
+    const found = execSync(
+      'find /opt/render/project/.cache/puppeteer -name "chrome" -type f 2>/dev/null | head -1'
+    ).toString().trim();
+    if (found) return found;
+  } catch {}
+  return '/opt/render/project/.cache/puppeteer/chrome/linux-150.0.7871.24/chrome-linux64/chrome';
+}
+
+const CHROME_PATH = getChromePath();
 
 const LAUNCH_ARGS = [
   '--no-sandbox',
@@ -32,7 +48,7 @@ const USER_AGENTS = [
 
 let browserInstance = null;
 let browserLaunchPromise = null;
-
+logger.info(`Using Chrome at: ${CHROME_PATH}`);
 async function getBrowser() {
   // Return existing healthy browser
   if (browserInstance) {
