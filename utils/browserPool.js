@@ -1,8 +1,29 @@
 const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+
+// Only use safe stealth evasions — skip ones that call bringToFront
+const stealth = StealthPlugin();
+stealth.enabledEvasions = new Set([
+  'chrome.app',
+  'chrome.csi',
+  'chrome.loadTimes',
+  'chrome.runtime',
+  'defaultArgs',
+  'navigator.hardwareConcurrency',
+  'navigator.languages',
+  'navigator.permissions',
+  'navigator.plugins',
+  'navigator.vendor',
+  'navigator.webdriver',
+  'sourceurl',
+  'user-agent-override',
+  'webgl.vendor',
+  'window.outerdimensions',
+]);
+puppeteer.use(stealth);
 const logger = require('./logger');
 
-puppeteer.use(StealthPlugin());
+
 
 const isWindows = process.platform === 'win32';
 
@@ -37,6 +58,12 @@ const LAUNCH_ARGS = [
   '--no-first-run',
   '--no-zygote',
   '--single-process',
+  '--disable-extensions',
+  '--disable-background-networking',
+  '--disable-background-timer-throttling',
+  '--disable-backgrounding-occluded-windows',
+  '--disable-renderer-backgrounding',
+  '--disable-ipc-flooding-protection',
 ];
 
 const USER_AGENTS = [
@@ -97,12 +124,14 @@ async function getBrowser() {
 
 async function createPage(width = 1440, height = 900) {
   const browser = await getBrowser();
-  const page    = await browser.newPage();
-  const isPerRequest = !isWindows && process.env.NODE_ENV === 'production';
 
-  // Attach browser to page so callers can close it in per-request mode
-  page._browserInstance   = browser;
-  page._isPerRequest      = isPerRequest;
+  // Use existing blank page if available to avoid bringToFront conflict
+  const pages   = await browser.pages();
+  const page    = pages.length > 0 ? pages[0] : await browser.newPage();
+
+  const isPerRequest = !isWindows && process.env.NODE_ENV === 'production';
+  page._browserInstance = browser;
+  page._isPerRequest    = isPerRequest;
 
   // Stealth settings
   await page.setUserAgent(USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)]);
