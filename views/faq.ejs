@@ -1,0 +1,75 @@
+<%- include('partials/header') %>
+
+<div class="container-md section-py">
+  <div class="page-header">
+    <h1>Frequently asked questions</h1>
+    <p>Everything you need to know about OneXp SiteShot.</p>
+  </div>
+
+  <div class="card faq-list mt-10">
+
+    <div class="faq-item">
+      <button class="faq-trigger" aria-expanded="true">
+        Which websites can I capture?
+        <span class="faq-icon open">+</span>
+      </button>
+      <div class="faq-answer open">
+        Any publicly accessible URL. Pages behind authentication, paywalls or geo-restrictions
+        can't be captured on the free plan.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-trigger" aria-expanded="false">
+        Are screenshots watermark-free?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">
+        Yes — all plans, including Free, return clean, brand-free images.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-trigger" aria-expanded="false">
+        What formats are supported?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">
+        JPG on Free. Pro and Business plans add PNG and PDF.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-trigger" aria-expanded="false">
+        Do you support full-page captures?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">
+        Yes. We scroll the page, trigger lazy-load and stitch the full DOM into a single image.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-trigger" aria-expanded="false">
+        Is there an API?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">
+        Yes. A simple REST API with bearer-token auth. See the <a href="/api" style="color:var(--color-primary)">API page</a> for the full spec.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-trigger" aria-expanded="false">
+        How do you handle billing?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">
+        Monthly or annual subscriptions via Stripe or Paystack. Cancel any time from your dashboard.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<%- include('partials/footer') %>

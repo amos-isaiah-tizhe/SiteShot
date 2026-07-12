@@ -1,0 +1,59 @@
+{
+  "name": "OneXp SiteShot",
+  "short_name": "SiteShot",
+  "description": "Capture full-page, device-accurate website screenshots from any URL. Free, fast and developer friendly.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f3ff",
+  "theme_color": "#7c3aed",
+  "orientation": "any",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["productivity", "developer tools", "utilities"],
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/assets/hero.png",
+      "sizes": "1280x960",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "OneXp SiteShot — Capture any website instantly"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Capture Screenshot",
+      "short_name": "Capture",
+      "description": "Go to the screenshot capture tool",
+      "url": "/",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "API Docs",
+      "short_name": "API",
+      "description": "View the SiteShot REST API documentation",
+      "url": "/api",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Pricing",
+      "short_name": "Pricing",
+      "description": "View SiteShot pricing plans",
+      "url": "/pricing",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    }
+  ]
+}

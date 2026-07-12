@@ -1,0 +1,110 @@
+<%- include('../partials/header') %>
+
+<div class="container section-py">
+  <div class="dashboard-header">
+    <div>
+      <h1 class="dashboard-title">Admin Panel</h1>
+      <p class="dashboard-sub">OneXp SiteShot — system overview</p>
+    </div>
+    <div style="display:flex;gap:0.5rem">
+      <a href="/admin/users" class="btn-secondary">Users</a>
+      <a href="/admin/contacts" class="btn-secondary">Contacts</a>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="dashboard-grid" style="margin-bottom:2rem">
+    <div class="card dash-card">
+      <div class="dash-card-label">Total users</div>
+      <div class="dash-usage-val"><%= stats.totalUsers %></div>
+    </div>
+    <div class="card dash-card">
+      <div class="dash-card-label">Free users</div>
+      <div class="dash-usage-val"><%= stats.freeUsers %></div>
+    </div>
+    <div class="card dash-card">
+      <div class="dash-card-label">Pro users</div>
+      <div class="dash-usage-val" style="color:var(--color-primary)"><%= stats.proUsers %></div>
+    </div>
+    <div class="card dash-card">
+      <div class="dash-card-label">Business users</div>
+      <div class="dash-usage-val" style="color:var(--color-primary-active)"><%= stats.businessUsers %></div>
+    </div>
+  </div>
+
+  <!-- Recent users -->
+  <div class="card" style="padding:1.5rem;margin-bottom:1.5rem">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+      <h2 style="font-size:1rem;font-weight:700">Recent users</h2>
+      <a href="/admin/users" class="btn-secondary btn-sm">View all</a>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Name</th><th>Email</th><th>Plan</th><th>Screenshots</th><th>Joined</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% recentUsers.forEach(u => { %>
+          <tr>
+            <td><%= u.name %></td>
+            <td><%= u.email %></td>
+            <td>
+              <span class="plan-badge plan-<%= u.plan %>"><%= u.plan %></span>
+            </td>
+            <td><%= u.screenshotsThisMonth %></td>
+            <td><%= new Date(u.createdAt).toLocaleDateString('en-NG') %></td>
+            <td>
+              <select class="input-field" style="padding:0.3rem;font-size:0.75rem;width:auto" onchange="updatePlan('<%= u._id %>', this.value)">
+                <option value="free"     <%= u.plan === 'free'     ? 'selected' : '' %>>Free</option>
+                <option value="pro"      <%= u.plan === 'pro'      ? 'selected' : '' %>>Pro</option>
+                <option value="business" <%= u.plan === 'business' ? 'selected' : '' %>>Business</option>
+              </select>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Recent contacts -->
+  <div class="card" style="padding:1.5rem">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+      <h2 style="font-size:1rem;font-weight:700">Recent messages</h2>
+      <a href="/admin/contacts" class="btn-secondary btn-sm">View all</a>
+    </div>
+    <% recentContacts.forEach(c => { %>
+    <div style="padding:1rem;border-bottom:1px solid var(--color-border)">
+      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:0.5rem">
+        <strong style="font-size:0.875rem"><%= c.name %></strong>
+        <span style="font-size:0.75rem;color:var(--color-text-muted)"><%= new Date(c.createdAt).toLocaleDateString('en-NG') %></span>
+      </div>
+      <div style="font-size:0.8rem;color:var(--color-text-muted)"><%= c.email %> — <%= c.subject %></div>
+      <div style="font-size:0.875rem;margin-top:0.25rem"><%= c.message.substring(0, 120) %><%= c.message.length > 120 ? '...' : '' %></div>
+    </div>
+    <% }) %>
+  </div>
+</div>
+
+<script>
+async function updatePlan(userId, plan) {
+  const res  = await fetch(`/admin/users/${userId}/plan`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ plan }),
+  });
+  const data = await res.json();
+  if (data.success) {
+    const msg = document.createElement('div');
+    msg.className = 'alert alert-success';
+    msg.style.cssText = 'position:fixed;top:1rem;right:1rem;z-index:9999;padding:0.75rem 1rem;font-size:0.875rem';
+    msg.textContent = `Plan updated to ${plan}`;
+    document.body.appendChild(msg);
+    setTimeout(() => msg.remove(), 2500);
+  }
+}
+</script>
+
+<%- include('../partials/footer') %>

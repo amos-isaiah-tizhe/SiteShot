@@ -1,0 +1,154 @@
+<%- include('partials/header') %>
+
+<div class="container section-py">
+
+  <% if (paymentSuccess) { %>
+    <div class="alert alert-success" style="margin-bottom:1.5rem">
+      ✓ Payment successful! Your plan has been upgraded.
+    </div>
+  <% } %>
+  <% if (paymentFailed) { %>
+    <div class="alert alert-error" style="margin-bottom:1.5rem">
+      ✗ Payment failed or was cancelled. Please try again.
+    </div>
+  <% } %>
+
+  <div class="dashboard-header">
+    <div>
+      <h1 class="dashboard-title">Dashboard</h1>
+      <p class="dashboard-sub">Welcome back, <strong><%= user.name %></strong></p>
+    </div>
+    <a href="/pricing" class="btn-primary">Upgrade plan</a>
+  </div>
+
+  <div class="dashboard-grid">
+
+    <!-- Plan card -->
+    <div class="card dash-card">
+      <div class="dash-card-label">Current plan</div>
+      <div class="dash-plan-name <%= user.plan %>"><%= user.plan.charAt(0).toUpperCase() + user.plan.slice(1) %></div>
+      <div class="dash-card-sub">
+        <% if (user.plan !== 'free') { %>
+          <%= user.billingCycle === 'annual' ? 'Annual' : 'Monthly' %> billing
+          <% if (user.subscriptionEndDate) { %>
+            · Renews <%= new Date(user.subscriptionEndDate).toLocaleDateString('en-NG', { day:'numeric', month:'short', year:'numeric' }) %>
+          <% } %>
+        <% } else { %>
+          Free forever
+        <% } %>
+      </div>
+      <% if (user.plan !== 'free') { %>
+        <button class="btn-secondary btn-sm" style="margin-top:1rem" id="cancel-btn">Cancel subscription</button>
+      <% } else { %>
+        <a href="/pricing" class="btn-primary btn-sm" style="margin-top:1rem;display:inline-flex">Upgrade</a>
+      <% } %>
+    </div>
+
+    <!-- Usage card -->
+    <div class="card dash-card">
+      <div class="dash-card-label">Screenshots this month</div>
+      <div class="dash-usage-row">
+        <span class="dash-usage-val"><%= used %></span>
+        <span class="dash-usage-sep">/</span>
+        <span class="dash-usage-limit"><%= limit %></span>
+      </div>
+      <div class="usage-bar-wrap">
+        <div class="usage-bar" style="width:<%= percent %>%"></div>
+      </div>
+      <div class="dash-card-sub"><%= remaining %> remaining this month</div>
+    </div>
+
+    <!-- API key card -->
+    <div class="card dash-card">
+      <div class="dash-card-label">API key</div>
+      <% if (user.plan === 'free') { %>
+        <p style="font-size:0.875rem;color:var(--color-text-muted);margin-top:0.5rem">
+          API access is available on Pro and Business plans.
+        </p>
+        <a href="/pricing" class="btn-primary btn-sm" style="margin-top:1rem;display:inline-flex">Upgrade to use API</a>
+      <% } else { %>
+        <div class="api-key-wrap">
+          <input
+            id="api-key-input"
+            type="password"
+            value="<%= user.apiKey %>"
+            class="input-field"
+            readonly
+            style="font-family:var(--font-mono);font-size:0.8rem"
+          />
+          <button class="btn-secondary btn-sm" id="toggle-key-btn">Show</button>
+        </div>
+        <div style="display:flex;gap:0.5rem;margin-top:0.75rem;flex-wrap:wrap">
+          <button class="btn-secondary btn-sm" id="copy-key-btn">Copy key</button>
+          <button class="btn-secondary btn-sm" id="rotate-key-btn">Rotate key</button>
+        </div>
+        <p id="key-msg" style="font-size:0.78rem;margin-top:0.5rem;color:var(--color-success);display:none"></p>
+      <% } %>
+    </div>
+
+    <!-- Account info card -->
+    <div class="card dash-card">
+      <div class="dash-card-label">Account</div>
+      <div style="margin-top:0.5rem;font-size:0.875rem;display:flex;flex-direction:column;gap:0.4rem">
+        <div><span style="color:var(--color-text-muted)">Name:</span> <%= user.name %></div>
+        <div><span style="color:var(--color-text-muted)">Email:</span> <%= user.email %></div>
+        <div><span style="color:var(--color-text-muted)">Member since:</span> <%= new Date(user.createdAt).toLocaleDateString('en-NG', { day:'numeric', month:'short', year:'numeric' }) %></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Toggle API key visibility
+  const keyInput   = document.getElementById('api-key-input');
+  const toggleBtn  = document.getElementById('toggle-key-btn');
+  const copyBtn    = document.getElementById('copy-key-btn');
+  const rotateBtn  = document.getElementById('rotate-key-btn');
+  const cancelBtn  = document.getElementById('cancel-btn');
+  const keyMsg     = document.getElementById('key-msg');
+
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', () => {
+      const isHidden = keyInput.type === 'password';
+      keyInput.type  = isHidden ? 'text' : 'password';
+      toggleBtn.textContent = isHidden ? 'Hide' : 'Show';
+    });
+  }
+
+  if (copyBtn) {
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(keyInput.value).then(() => {
+        keyMsg.textContent    = 'API key copied to clipboard.';
+        keyMsg.style.display  = 'block';
+        setTimeout(() => { keyMsg.style.display = 'none'; }, 2500);
+      });
+    });
+  }
+
+  if (rotateBtn) {
+    rotateBtn.addEventListener('click', async () => {
+      if (!confirm('Rotate your API key? Your old key will stop working immediately.')) return;
+      const res  = await fetch('/dashboard/rotate-key', { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        keyInput.value        = data.apiKey;
+        keyMsg.textContent    = 'API key rotated successfully.';
+        keyMsg.style.color    = 'var(--color-success)';
+        keyMsg.style.display  = 'block';
+        setTimeout(() => { keyMsg.style.display = 'none'; }, 2500);
+      }
+    });
+  }
+
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', async () => {
+      if (!confirm('Cancel your subscription? You will be moved to the Free plan immediately.')) return;
+      const res  = await fetch('/payment/cancel', { method: 'POST' });
+      const data = await res.json();
+      if (data.success) window.location.reload();
+    });
+  }
+</script>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,66 @@
+<%- include('partials/header') %>
+
+<div class="auth-wrap">
+  <div class="card auth-card" style="text-align:center">
+    <div style="font-size:2.5rem;color:var(--color-primary);margin-bottom:1rem">
+      <i class="fa-solid fa-envelope-circle-check"></i>
+    </div>
+    <h1 style="font-size:1.4rem">Check your inbox</h1>
+    <p class="sub" style="margin-top:0.5rem">
+      We sent a verification link to your email address.
+      Click it to activate your account.
+    </p>
+    <p style="margin-top:1rem;font-size:0.8rem;color:var(--color-text-muted)">
+      Didn't receive it? Check your spam folder or resend below.
+    </p>
+
+    <div style="margin-top:1.25rem">
+      <input
+        id="resend-email"
+        type="email"
+        placeholder="Your email address"
+        class="input-field"
+        style="margin-bottom:0.75rem"
+      />
+      <button id="resend-btn" class="btn-secondary btn-full">Resend verification email</button>
+      <p id="resend-msg" style="font-size:0.8rem;margin-top:0.5rem;display:none"></p>
+    </div>
+
+    <p class="auth-footer" style="margin-top:1.5rem">
+      <a href="/login">Back to login</a>
+    </p>
+  </div>
+</div>
+
+<script>
+  document.getElementById('resend-btn').addEventListener('click', async () => {
+    const email = document.getElementById('resend-email').value.trim();
+    const msg   = document.getElementById('resend-msg');
+    const btn   = document.getElementById('resend-btn');
+
+    if (!email) {
+      msg.textContent    = 'Please enter your email address.';
+      msg.style.color    = 'var(--color-error)';
+      msg.style.display  = 'block';
+      return;
+    }
+
+    btn.disabled    = true;
+    btn.textContent = 'Sending...';
+
+    const res  = await fetch('/resend-verification', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ email }),
+    });
+    const data = await res.json();
+
+    msg.textContent   = 'Verification email sent — check your inbox.';
+    msg.style.color   = 'var(--color-success)';
+    msg.style.display = 'block';
+    btn.disabled      = false;
+    btn.textContent   = 'Resend verification email';
+  });
+</script>
+
+<%- include('partials/footer') %>

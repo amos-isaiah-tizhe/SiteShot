@@ -1,0 +1,64 @@
+# OneXp SiteShot
+
+> OneXp SiteShot is a free, developer-friendly website screenshot tool that captures full-page, device-accurate screenshots from any public URL. Export to JPG, PNG or PDF instantly — no installs, no watermarks.
+
+## What it does
+
+OneXp SiteShot lets users and developers capture website screenshots programmatically or via a simple web interface. It renders pages using a headless Chromium browser, supports desktop, tablet and mobile viewports, and returns clean screenshots in under 5 seconds for most websites.
+
+## Key features
+
+- Full-page screenshot capture (scrolls entire DOM)
+- Device emulation: Desktop (1440px), Tablet (768px), Mobile (390px)
+- Custom width and height support
+- Export formats: JPG, PNG, PDF
+- REST API with Bearer token authentication
+- Rate limiting per plan (Free: 60/hr, Pro: 1,000/hr, Business: unlimited)
+- No watermarks on any plan
+- Beta: all features currently free
+
+## Who it is for
+
+- Web developers testing responsive designs
+- QA engineers capturing page states for documentation
+- Agencies archiving client websites
+- Marketers capturing competitor pages
+- Businesses automating visual monitoring
+
+## Pricing
+
+- Free: 100 screenshots/month, JPG only
+- Pro: ₦1,500/month — 5,000 screenshots, JPG + PNG + PDF, API access
+- Business: ₦2,500/month — unlimited screenshots, priority rendering, team accounts
+
+All plans are currently free during beta while payment processing is finalized.
+
+## API
+
+Endpoint: POST https://siteshot.onexportalhq.com/api/v1/screenshot
+
+Authentication: Bearer token (API key from dashboard)
+
+Request body:
+- url (string, required) — the website URL to capture
+- width (number) — viewport width in pixels, default 1280
+- height (number) — viewport height in pixels, default 1024
+- fullPage (boolean) — capture entire scrollable page, default true
+- format (string) — jpg | png | pdf, default jpg
+
+Response includes: success, imageUrl, file (base64), meta (width, height, tookMs, format, fullPage)
+
+## Company
+
+OneXp SiteShot is a product by OneXportal.
+Website: https://siteshot.onexportalhq.com
+Contact: hello.onexportal@gmail.com
+
+## Pages
+
+- Home / Capture tool: https://siteshot.onexportalhq.com/
+- API documentation: https://siteshot.onexportalhq.com/api
+- Pricing: https://siteshot.onexportalhq.com/pricing
+- FAQ: https://siteshot.onexportalhq.com/faq
+- Contact: https://siteshot.onexportalhq.com/contact
+- Register: https://siteshot.onexportalhq.com/register

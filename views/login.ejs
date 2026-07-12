@@ -1,0 +1,43 @@
+<%- include('partials/header') %>
+
+<div class="auth-wrap">
+  <div class="card auth-card">
+    <h1>Welcome back</h1>
+    <p class="sub">Log in to your OneXp SiteShot account.</p>
+
+    <% if (flashError && flashError.length) { %>
+      <div class="alert alert-error mt-4">
+        <% flashError.forEach(e => { %><div><%= e %></div><% }) %>
+      </div>
+    <% } %>
+
+    <% if (errors && errors.length) { %>
+      <div class="alert alert-error mt-4">
+        <% errors.forEach(e => { %><div><%= e.msg %></div><% }) %>
+      </div>
+    <% } %>
+
+    <form action="/login" method="POST" class="auth-form">
+      <div class="form-group">
+        <label class="form-label" for="email">Email</label>
+        <input id="email" name="email" type="email" required autocomplete="email"
+               class="input-field" value="<%= old.email || '' %>" />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="password">Password</label>
+        <input id="password" name="password" type="password" required autocomplete="current-password"
+               class="input-field" />
+      </div>
+      <div class="forgot-link">
+        <a href="#">Forgot password?</a>
+      </div>
+      <button type="submit" class="btn-primary btn-full">Log in</button>
+    </form>
+
+    <p class="auth-footer">
+      No account yet? <a href="/register">Sign up</a>
+    </p>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

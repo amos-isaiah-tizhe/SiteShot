@@ -1,0 +1,195 @@
+<%- include('partials/header') %>
+
+<div class="gradient-bg">
+  
+<% if (locals.query && new URLSearchParams(locals.query).get('verified') === '1') { %>
+  <div class="alert alert-success container" style="margin-top:1rem">
+    <i class="fa-solid fa-circle-check" style="margin-right:0.4rem"></i>
+    Email verified! Welcome to OneXp SiteShot.
+  </div>
+<% } %>
+  <!-- Hero -->
+  <section class="hero-section">
+    <div>
+      <span class="hero-badge">
+        <span class="dot"></span>
+        Live capture engine
+      </span>
+      <h1 class="hero-title">
+        Capture any website,
+        <span class="gradient-text">in one shot.</span>
+      </h1>
+      <p class="hero-sub">
+        OneXp SiteShot renders full-page, device-accurate screenshots from any public URL —
+        no installs, no fuss. Export to JPG, PNG or PDF and ship to your team in seconds.
+      </p>
+      <div class="hero-actions">
+        <a href="#capture" class="btn-primary">Try it free</a>
+        <a href="/api" class="btn-secondary">View API</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="val">~2s</div>
+          <div class="lbl">Avg capture</div>
+        </div>
+        <div class="hero-stat">
+          <div class="val">JPG · PNG · PDF</div>
+          <div class="lbl">Formats</div>
+        </div>
+        <div class="hero-stat">
+          <div class="val">3 presets</div>
+          <div class="lbl">Devices</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-img-wrap">
+      <img
+        src="/assets/hero.png"
+        alt="Website screenshots floating in isometric perspective"
+        width="1280"
+        height="960"
+      />
+    </div>
+  </section>
+
+  <!-- Capture form -->
+  <section id="capture" class="capture-section">
+    <div class="card capture-card">
+      <form id="capture-form">
+
+        <!-- URL row -->
+        <div class="form-group" style="margin-bottom:1.25rem">
+          <label class="form-label" for="url">Website URL</label>
+          <div class="capture-url-row">
+            <input
+              id="url"
+              type="text"
+              inputmode="url"
+              autocomplete="url"
+              placeholder="https://example.com"
+              value="https://www.threads.com/"
+              class="input-field"
+            />
+            <button type="submit" id="submit-btn" class="btn-primary">
+              Capture screenshot
+            </button>
+          </div>
+          <p><code><strong>Use Query String API endpoint Instead</strong></code>  <a href="/api/#apiExamples" class="btn-secondary">View API</a></p>
+          <p id="capture-error" class="form-error" style="display:none;margin-top:.4rem"></p>
+        </div>
+
+        <!-- Options grid -->
+        <div class="capture-grid" style="margin-bottom:1rem">
+          <div class="form-group">
+            <label class="form-label">Device</label>
+            <div class="device-group">
+              <button type="button" class="device-btn active" data-device="desktop">Desktop</button>
+              <button type="button" class="device-btn"        data-device="tablet">Tablet</button>
+              <button type="button" class="device-btn"        data-device="mobile">Mobile</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="width">Width (px)</label>
+            <input id="width" type="number" min="120" max="2560" value="1440" class="input-field" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="height">Height (px)</label>
+            <input id="height" type="number" min="120" max="4000" value="900" class="input-field" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="format">Format</label>
+            <select id="format" class="input-field">
+              <option value="jpg">JPG</option>
+              <option value="png">PNG</option>
+              <option value="pdf">PDF</option>
+            </select>
+          </div>
+        </div>
+
+        <label class="checkbox-label">
+          <input type="checkbox" id="fullPage" checked />
+          Capture the entire page (scroll to bottom)
+        </label>
+
+      </form>
+    </div>
+
+    <!-- Result -->
+    <div class="card screenshot-result" id="screenshot-result" style="display:none">
+      <div class="result-bar">
+        <div class="result-url">
+          <span class="result-dot"></span>
+          <span id="result-url"></span>
+        </div>
+        <div class="result-actions">
+          <a id="result-open" href="#" target="_blank" rel="noreferrer" class="btn-secondary btn-sm">Open</a>
+          <a id="result-download" href="#" class="btn-primary btn-sm">Download</a>
+        </div>
+      </div>
+
+<!-- Result body -->
+
+     <div class="result-body">
+  <div id="capture-loader" style="display:none; flex-direction:column; align-items:center; justify-content:center; padding:3rem; gap:1rem;">
+    <div class="loader-spinner"></div>
+    <span style="font-size:0.875rem; color:var(--color-text-muted); font-weight:500;">Capturing…</span>
+  </div>
+  <img id="result-img" src="" alt="" style="display:none" />
+  <iframe id="result-iframe" title="Screenshot PDF" src="" style="display:none"></iframe>
+</div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features-section">
+    <h2>Built for speed, precision and scale.</h2>
+    <p class="sub">Everything you need to capture, archive and share pixel-perfect website screenshots.</p>
+    <div class="features-grid">
+      <div class="card feature-card">
+        <div class="feature-icon"><span></span></div>
+        <h3>Full-page captures</h3>
+        <p>Scroll the entire DOM and render lazy-loaded content with millisecond precision.</p>
+      </div>
+      <div class="card feature-card">
+        <div class="feature-icon"><span></span></div>
+        <h3>Device emulation</h3>
+        <p>Desktop, tablet and mobile presets, plus pixel-perfect custom dimensions.</p>
+      </div>
+      <div class="card feature-card">
+        <div class="feature-icon"><span></span></div>
+        <h3>JPG · PNG · PDF</h3>
+        <p>Export in the format that fits your workflow — from social previews to legal archives.</p>
+      </div>
+      <div class="card feature-card">
+        <div class="feature-icon"><span></span></div>
+        <h3>Developer API</h3>
+        <p>Drop-in REST endpoint with API key auth, rate limits and usage analytics.</p>
+      </div>
+      <div class="card feature-card">
+        <div class="feature-icon"><span></span></div>
+        <h3>No watermarks</h3>
+        <p>Clean, brand-free screenshots on every plan — including the free tier.</p>
+      </div>
+      <div class="card feature-card">
+        <div class="feature-icon"><span></span></div>
+        <h3>Cloud rendered</h3>
+        <p>Headless Chromium rendering at the edge keeps captures fast and reliable.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="card cta-card">
+      <h2>Ready to ship better screenshots?</h2>
+      <p>Create a free account and capture your first 100 screenshots this month.</p>
+      <div class="cta-actions">
+        <a href="/register" class="btn-primary btn-cta-white">Create free account</a>
+        <a href="/pricing"  class="btn-secondary btn-cta-outline">See pricing</a>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<%- include('partials/footer') %>

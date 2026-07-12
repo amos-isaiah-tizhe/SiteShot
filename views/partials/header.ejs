@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Primary SEO -->
+  <title><%= locals.title || 'OneXp SiteShot' %></title>
+  <meta name="description" content="<%= locals.description || 'Capture full-page, device-accurate website screenshots from any URL. Free, fast and developer friendly.' %>" />
+  <meta name="keywords" content="website screenshot, screenshot tool, full page screenshot, website capture, screenshot API, puppeteer screenshot, web screenshot generator, online screenshot" />
+  <meta name="author" content="OneXp" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://siteshot.onexportalhq.com<%= currentPath %>" />
+
+  <!-- Open Graph (Facebook, LinkedIn, WhatsApp) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="OneXp SiteShot" />
+  <meta property="og:title" content="<%= locals.title || 'OneXp SiteShot' %>" />
+  <meta property="og:description" content="<%= locals.description || 'Capture full-page, device-accurate website screenshots from any URL. Free, fast and developer friendly.' %>" />
+  <meta property="og:url" content="https://siteshot.onexportalhq.com<%= currentPath %>" />
+  <meta property="og:image" content="https://siteshot.onexportalhq.com/assets/hero.png" />
+  <meta property="og:image:width" content="1280" />
+  <meta property="og:image:height" content="960" />
+  <meta property="og:image:alt" content="OneXp SiteShot — Instant Website Screenshots" />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="<%= locals.title || 'OneXp SiteShot' %>" />
+  <meta name="twitter:description" content="<%= locals.description || 'Capture full-page, device-accurate website screenshots from any URL.' %>" />
+  <meta name="twitter:image" content="https://siteshot.onexportalhq.com/assets/hero.png" />
+  <meta name="twitter:image:alt" content="OneXp SiteShot — Instant Website Screenshots" />
+
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#7c3aed" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="SiteShot" />
+  <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+
+  <!-- Favicon -->
+  <link rel="icon" href="/assets/logo.png" type="image/png" />
+
+  <!-- Structured Data (JSON-LD) for GEO -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "OneXp SiteShot",
+    "url": "https://siteshot.onexportalhq.com",
+    "description": "Capture full-page, device-accurate website screenshots from any URL. Free, fast and developer friendly.",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Any",
+    "offers": [
+      {
+        "@type": "Offer",
+        "name": "Free Plan",
+        "price": "0",
+        "priceCurrency": "NGN",
+        "description": "100 screenshots per month, JPG export"
+      },
+      {
+        "@type": "Offer",
+        "name": "Pro Plan",
+        "price": "1500",
+        "priceCurrency": "NGN",
+        "description": "5,000 screenshots per month, JPG, PNG and PDF, API access"
+      },
+      {
+        "@type": "Offer",
+        "name": "Business Plan",
+        "price": "2500",
+        "priceCurrency": "NGN",
+        "description": "Unlimited screenshots, priority rendering, team accounts"
+      }
+    ],
+    "publisher": {
+      "@type": "Organization",
+      "name": "OneXportal",
+      "url": "https://siteshot.onexportalhq.com",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "hello.onexportal@gmail.com",
+        "contactType": "customer support"
+      }
+    },
+    "featureList": [
+      "Full-page screenshot capture",
+      "Desktop, tablet and mobile emulation",
+      "JPG, PNG and PDF export",
+      "REST API with authentication",
+      "No watermarks",
+      "Custom viewport dimensions"
+    ]
+  }
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&family=Fira+Code:wght@400;500&display=swap" />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+<div class="min-h-screen flex flex-col">
+
+<div class="beta-banner">
+  <i class="fa-solid fa-flask" style="margin-right:0.4rem"></i>
+  We're in beta — all features are <strong>free</strong> while payment processing is being finalized.
+</div>
+
+<header class="site-header">
+  <div class="inner">
+    <a href="/" class="site-logo">
+      <img src="/assets/logo.png" alt="OneXp SiteShot" />
+    </a>
+
+    <nav aria-label="Main navigation">
+      <ul class="site-nav">
+        <li><a href="/"        class="<%= currentPath === '/'        ? 'active' : '' %>">Capture</a></li>
+        <li><a href="/api"     class="<%= currentPath === '/api'     ? 'active' : '' %>">API</a></li>
+        <li><a href="/pricing" class="<%= currentPath === '/pricing' ? 'active' : '' %>">Pricing</a></li>
+        <li><a href="/faq"     class="<%= currentPath === '/faq'     ? 'active' : '' %>">FAQ</a></li>
+        <li><a href="/contact" class="<%= currentPath === '/contact' ? 'active' : '' %>">Contact</a></li>
+        <% if (isLoggedIn) { %>
+          <li><a href="/dashboard" class="<%= currentPath === '/dashboard' ? 'active' : '' %>">Dashboard</a></li>
+        <% } %>
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <% if (!isLoggedIn) { %>
+        <a href="/login"    class="btn-secondary hidden-mobile">Log in</a>
+        <a href="/register" class="btn-primary">Get started</a>
+      <% } else { %>
+        <span class="hidden-mobile" style="font-size:0.85rem;color:var(--color-text-secondary)">Hi, <%= userName %></span>
+        <form action="/logout" method="POST" style="display:inline">
+          <button type="submit" class="btn-secondary">Log out</button>
+        </form>
+      <% } %>
+      <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle menu" aria-expanded="false">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6"  x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <nav class="mobile-nav" id="mobile-nav" aria-label="Mobile navigation">
+    <a href="/">Capture</a>
+    <a href="/api">API</a>
+    <a href="/pricing">Pricing</a>
+    <a href="/faq">FAQ</a>
+    <a href="/contact">Contact</a>
+    <% if (isLoggedIn) { %>
+      <a href="/dashboard">Dashboard</a>
+    <% } %>
+    <div class="mobile-nav-actions">
+      <% if (!isLoggedIn) { %>
+        <a href="/login"    class="btn-secondary btn-sm">Log in</a>
+        <a href="/register" class="btn-primary btn-sm">Get started</a>
+      <% } else { %>
+        <form action="/logout" method="POST">
+          <button type="submit" class="btn-secondary btn-sm">Log out</button>
+        </form>
+      <% } %>
+    </div>
+  </nav>
+</header>
+
+<main class="flex-1">

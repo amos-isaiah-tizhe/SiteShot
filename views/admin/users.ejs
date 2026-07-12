@@ -1,0 +1,94 @@
+<%- include('../partials/header') %>
+
+<div class="container section-py">
+  <div class="dashboard-header">
+    <div>
+      <h1 class="dashboard-title">Users <span style="font-size:1rem;font-weight:500;color:var(--color-text-muted)">(<%= total %>)</span></h1>
+    </div>
+    <div style="display:flex;gap:0.5rem">
+      <a href="/admin" class="btn-secondary">← Dashboard</a>
+    </div>
+  </div>
+
+  <!-- Search -->
+  <form action="/admin/users" method="GET" style="display:flex;gap:0.75rem;margin-bottom:1.5rem">
+    <input name="search" value="<%= search %>" placeholder="Search by name or email..." class="input-field" style="max-width:24rem" />
+    <button type="submit" class="btn-primary">Search</button>
+    <% if (search) { %><a href="/admin/users" class="btn-secondary">Clear</a><% } %>
+  </form>
+
+  <div class="card" style="padding:1.5rem">
+    <div style="overflow-x:auto">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Name</th><th>Email</th><th>Plan</th><th>Screenshots</th><th>Status</th><th>Joined</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% users.forEach(u => { %>
+          <tr id="user-row-<%= u._id %>">
+            <td><%= u.name %></td>
+            <td style="font-size:0.8rem"><%= u.email %></td>
+            <td>
+              <select class="input-field" style="padding:0.3rem;font-size:0.75rem;width:auto" onchange="updatePlan('<%= u._id %>', this.value)">
+                <option value="free"     <%= u.plan === 'free'     ? 'selected' : '' %>>Free</option>
+                <option value="pro"      <%= u.plan === 'pro'      ? 'selected' : '' %>>Pro</option>
+                <option value="business" <%= u.plan === 'business' ? 'selected' : '' %>>Business</option>
+              </select>
+            </td>
+            <td><%= u.screenshotsThisMonth %></td>
+            <td><span class="plan-badge plan-<%= u.subscriptionStatus %>"><%= u.subscriptionStatus %></span></td>
+            <td style="font-size:0.75rem"><%= new Date(u.createdAt).toLocaleDateString('en-NG') %></td>
+            <td>
+              <button class="btn-secondary btn-sm" onclick="deleteUser('<%= u._id %>')" style="color:var(--color-error);border-color:var(--color-error)">Delete</button>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <% if (pages > 1) { %>
+    <div style="display:flex;gap:0.5rem;justify-content:center;margin-top:1.5rem;flex-wrap:wrap">
+      <% for (let i = 1; i <= pages; i++) { %>
+        <a href="/admin/users?page=<%= i %>&search=<%= search %>" class="<%= i === page ? 'btn-primary' : 'btn-secondary' %> btn-sm"><%= i %></a>
+      <% } %>
+    </div>
+    <% } %>
+  </div>
+</div>
+
+<script>
+async function updatePlan(userId, plan) {
+  const res  = await fetch(`/admin/users/${userId}/plan`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ plan }),
+  });
+  const data = await res.json();
+  if (data.success) showToast(`Plan updated to ${plan}`);
+}
+
+async function deleteUser(userId) {
+  if (!confirm('Delete this user permanently? This cannot be undone.')) return;
+  const res  = await fetch(`/admin/users/${userId}/delete`, { method: 'POST' });
+  const data = await res.json();
+  if (data.success) {
+    document.getElementById(`user-row-${userId}`)?.remove();
+    showToast('User deleted');
+  }
+}
+
+function showToast(msg) {
+  const el = document.createElement('div');
+  el.className = 'alert alert-success';
+  el.style.cssText = 'position:fixed;top:1rem;right:1rem;z-index:9999;padding:0.75rem 1rem;font-size:0.875rem;min-width:200px';
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2500);
+}
+</script>
+
+<%- include('../partials/footer') %>

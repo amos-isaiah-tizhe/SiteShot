@@ -1,0 +1,245 @@
+<%- include('partials/header') %>
+
+<div class="container section-py">
+ <div class="alert alert-success" style="text-align:center;margin-bottom:1.5rem;font-size:0.95rem">
+  <i class="fa-solid fa-gift" style="margin-right:0.5rem"></i>
+  <strong>Beta period:</strong> All features are completely free while we finalize payment processing. No card required.
+</div>
+<div class="page-header">
+  <h1>Pricing that scales with you.</h1>
+  <p>Start free. Upgrade when you need more volume, formats or speed.</p>
+</div>
+
+  <!-- Billing toggle -->
+  <div class="billing-toggle-wrap">
+    <button class="billing-btn active" id="btn-monthly" data-cycle="monthly">Monthly</button>
+    <button class="billing-btn" id="btn-annual" data-cycle="annual">
+      Annual <span class="save-badge">Save 20%</span>
+    </button>
+  </div>
+
+  <!-- Currency switcher -->
+  <div class="currency-wrap">
+    <label for="currency-select" style="font-size:0.875rem;color:var(--color-text-muted)">Currency:</label>
+    <select id="currency-select" class="input-field" style="width:auto;padding:0.4rem 0.75rem;font-size:0.875rem">
+      <option value="NGN">₦ NGN — Nigerian Naira</option>
+      <option value="GHS">₵ GHS — Ghanaian Cedi</option>
+      <option value="KES">KSh KES — Kenyan Shilling</option>
+      <option value="ZAR">R ZAR — South African Rand</option>
+      <option value="UGX">USh UGX — Ugandan Shilling</option>
+      <option value="TZS">TSh TZS — Tanzanian Shilling</option>
+      <option value="ETB">Br ETB — Ethiopian Birr</option>
+      <option value="USD">$ USD — US Dollar</option>
+    </select>
+    <span id="rate-status" style="font-size:0.75rem;color:var(--color-text-muted)">Loading rates…</span>
+  </div>
+
+  <div class="pricing-grid">
+
+    <!-- Free -->
+    <div class="card pricing-card">
+      <h2>Free</h2>
+      <p class="blurb">For casual captures and trying out the tool.</p>
+      <div class="price-row">
+        <span class="price-val" id="price-free">₦0</span>
+        <span class="price-cadence">forever</span>
+      </div>
+      <ul class="pricing-features">
+        <li><span class="check-icon">✓</span> 100 screenshots / month</li>
+        <li><span class="check-icon">✓</span> JPG export only</li>
+        <li><span class="check-icon">✓</span> Full-page captures</li>
+        <li><span class="check-icon">✓</span> Standard queue</li>
+        <li style="color:var(--color-text-muted)">✗ No API access</li>
+      </ul>
+      <a href="/register" class="btn-secondary btn-full pricing-cta">Start free</a>
+    </div>
+
+    <!-- Pro -->
+    <div class="card pricing-card highlighted">
+      <span class="popular-badge">Most popular</span>
+      <h2>Pro</h2>
+      <p class="blurb">For makers, agencies and growing apps.</p>
+      <div class="price-row">
+        <span class="price-val" id="price-pro">₦1,500</span>
+        <span class="price-cadence" id="cadence-pro">/ month</span>
+      </div>
+      <p id="annual-note-pro" style="font-size:0.78rem;color:var(--color-text-muted);margin-top:0.25rem;display:none">
+        Billed as <span id="annual-total-pro"></span> / year
+      </p>
+      <ul class="pricing-features">
+        <li><span class="check-icon">✓</span> 1,000 screenshots / month</li>
+        <li><span class="check-icon">✓</span> JPG, PNG &amp; PDF</li>
+        <li><span class="check-icon">✓</span> Priority rendering</li>
+        <li><span class="check-icon">✓</span> Full API access</li>
+        <li><span class="check-icon">✓</span> Email support</li>
+      </ul>
+     <a href="/register" class="btn-primary btn-full pricing-cta">
+  Get Pro free — Beta
+</a>
+    </div>
+
+    <!-- Business -->
+    <div class="card pricing-card">
+      <h2>Business</h2>
+      <p class="blurb">For teams shipping at scale.</p>
+      <div class="price-row">
+        <span class="price-val" id="price-business">₦2,500</span>
+        <span class="price-cadence" id="cadence-business">/ month</span>
+      </div>
+      <p id="annual-note-business" style="font-size:0.78rem;color:var(--color-text-muted);margin-top:0.25rem;display:none">
+        Billed as <span id="annual-total-business"></span> / year
+      </p>
+      <ul class="pricing-features">
+        <li><span class="check-icon">✓</span> Unlimited screenshots</li>
+        <li><span class="check-icon">✓</span> Highest-priority queue</li>
+        <li><span class="check-icon">✓</span> Dedicated API limits</li>
+        <li><span class="check-icon">✓</span> Team accounts</li>
+        <li><span class="check-icon">✓</span> SLA &amp; priority support</li>
+      </ul>
+     <a href="/register" class="btn-secondary btn-full pricing-cta">
+  Get Business free — Beta
+</a>
+    </div>
+
+  </div>
+
+  <p class="pricing-note">
+    Need a custom plan or on-prem deployment?
+    <a href="/contact" style="color:var(--color-primary);font-weight:500">Contact us</a>.
+  </p>
+</div>
+
+<script>
+  const BASE_PRICES = {
+    pro:      { monthly: 1500,  annual: 1200  },
+    business: { monthly: 2500,  annual: 2000  },
+  };
+
+  const CURRENCY_SYMBOLS = {
+    NGN: '₦', GHS: '₵', KES: 'KSh ', ZAR: 'R',
+    UGX: 'USh ', TZS: 'TSh ', ETB: 'Br ', USD: '$'
+  };
+
+  const CURRENCY_DECIMALS = {
+    NGN: 0, GHS: 2, KES: 0, ZAR: 2,
+    UGX: 0, TZS: 0, ETB: 2, USD: 2
+  };
+
+  let rates      = { NGN: 1 };
+  let cycle      = 'monthly';
+  let currency   = 'NGN';
+
+  // Fetch live rates from ExchangeRate-API
+  async function fetchRates() {
+    try {
+      const res  = await fetch(
+        `https://v6.exchangerate-api.com/v6/<%= process.env.EXCHANGE_RATE_API_KEY %>/latest/NGN`
+      );
+      const data = await res.json();
+      if (data.result === 'success') {
+        rates = data.conversion_rates;
+        document.getElementById('rate-status').textContent = 'Live rates';
+      } else {
+        document.getElementById('rate-status').textContent = 'Using estimated rates';
+      }
+    } catch {
+      document.getElementById('rate-status').textContent = 'Using estimated rates';
+    }
+    updatePrices();
+  }
+
+  function convert(amountNGN) {
+    const rate     = rates[currency] || 1;
+    const decimals = CURRENCY_DECIMALS[currency];
+    const converted = amountNGN * rate;
+    return converted.toLocaleString('en', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+  }
+
+  function symbol() { return CURRENCY_SYMBOLS[currency] || ''; }
+
+  function updatePrices() {
+    ['pro', 'business'].forEach(plan => {
+      const monthly = BASE_PRICES[plan].monthly;
+      const annual  = BASE_PRICES[plan].annual;
+      const price   = cycle === 'annual' ? annual : monthly;
+
+      document.getElementById(`price-${plan}`).textContent =
+        `${symbol()}${convert(price)}`;
+
+      document.getElementById(`cadence-${plan}`).textContent =
+        cycle === 'annual' ? '/ month' : '/ month';
+
+      const annualNote  = document.getElementById(`annual-note-${plan}`);
+      const annualTotal = document.getElementById(`annual-total-${plan}`);
+
+      if (cycle === 'annual') {
+        annualTotal.textContent = `${symbol()}${convert(annual * 12)}`;
+        annualNote.style.display = 'block';
+      } else {
+        annualNote.style.display = 'none';
+      }
+    });
+  }
+
+  // Billing toggle
+  document.getElementById('btn-monthly').addEventListener('click', () => {
+    cycle = 'monthly';
+    document.getElementById('btn-monthly').classList.add('active');
+    document.getElementById('btn-annual').classList.remove('active');
+    updatePrices();
+  });
+
+  document.getElementById('btn-annual').addEventListener('click', () => {
+    cycle = 'annual';
+    document.getElementById('btn-annual').classList.add('active');
+    document.getElementById('btn-monthly').classList.remove('active');
+    updatePrices();
+  });
+
+  // Currency switcher
+  document.getElementById('currency-select').addEventListener('change', (e) => {
+    currency = e.target.value;
+    updatePrices();
+  });
+
+  // Checkout
+  async function checkout(plan) {
+    const isLoggedIn = <%= isLoggedIn %>;
+    if (!isLoggedIn) {
+      window.location.href = '/register';
+      return;
+    }
+
+    // Try Paystack first, fallback to Stripe
+    try {
+      const res  = await fetch('/payment/paystack/initialize', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ plan, cycle }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        window.location.href = data.authorizationUrl;
+        return;
+      }
+    } catch {}
+
+    // Fallback to Stripe
+    try {
+      const res  = await fetch('/payment/stripe/initialize', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ plan, cycle }),
+      });
+      const data = await res.json();
+      if (data.success) window.location.href = data.authorizationUrl;
+    } catch (err) {
+      alert('Payment initialization failed. Please try again.');
+    }
+  }
+
+  // Init
+  fetchRates();
+</script>
+
+<%- include('partials/footer') %>

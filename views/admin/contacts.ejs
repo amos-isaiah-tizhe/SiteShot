@@ -1,0 +1,54 @@
+<%- include('../partials/header') %>
+
+<div class="container section-py">
+  <div class="dashboard-header">
+    <div>
+      <h1 class="dashboard-title">Messages <span style="font-size:1rem;font-weight:500;color:var(--color-text-muted)">(<%= total %>)</span></h1>
+    </div>
+    <a href="/admin" class="btn-secondary">← Dashboard</a>
+  </div>
+
+  <div class="card" style="padding:1.5rem">
+    <% if (contacts.length === 0) { %>
+      <p style="color:var(--color-text-muted);text-align:center;padding:2rem">No messages yet.</p>
+    <% } %>
+    <% contacts.forEach(c => { %>
+    <div id="contact-<%= c._id %>" style="padding:1.25rem;border-bottom:1px solid var(--color-border)">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.5rem">
+        <div>
+          <strong style="font-size:0.9rem"><%= c.name %></strong>
+          <span style="font-size:0.8rem;color:var(--color-text-muted);margin-left:0.5rem"><a href="mailto:<%= c.email %>"><%= c.email %></a></span>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.75rem">
+          <span style="font-size:0.75rem;color:var(--color-text-muted)"><%= new Date(c.createdAt).toLocaleDateString('en-NG', {day:'numeric',month:'short',year:'numeric'}) %></span>
+          <button class="btn-secondary btn-sm" onclick="deleteContact('<%= c._id %>')" style="color:var(--color-error);border-color:var(--color-error)">Delete</button>
+        </div>
+      </div>
+      <div style="font-size:0.8rem;font-weight:600;color:var(--color-text-secondary);margin-top:0.25rem"><%= c.subject %></div>
+      <div style="font-size:0.875rem;margin-top:0.5rem;line-height:1.6;color:var(--color-text-muted)"><%= c.message %></div>
+    </div>
+    <% }) %>
+
+    <!-- Pagination -->
+    <% if (pages > 1) { %>
+    <div style="display:flex;gap:0.5rem;justify-content:center;margin-top:1.5rem;flex-wrap:wrap">
+      <% for (let i = 1; i <= pages; i++) { %>
+        <a href="/admin/contacts?page=<%= i %>" class="<%= i === page ? 'btn-primary' : 'btn-secondary' %> btn-sm"><%= i %></a>
+      <% } %>
+    </div>
+    <% } %>
+  </div>
+</div>
+
+<script>
+async function deleteContact(id) {
+  if (!confirm('Delete this message?')) return;
+  const res  = await fetch(`/admin/contacts/${id}/delete`, { method: 'POST' });
+  const data = await res.json();
+  if (data.success) {
+    document.getElementById(`contact-${id}`)?.remove();
+  }
+}
+</script>
+
+<%- include('../partials/footer') %>

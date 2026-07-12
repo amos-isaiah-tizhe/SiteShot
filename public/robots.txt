@@ -1,0 +1,26 @@
+User-agent: *
+Allow: /
+Allow: /api
+Allow: /pricing
+Allow: /faq
+Allow: /contact
+Allow: /register
+Allow: /login
+
+# Block private/auth routes
+Disallow: /dashboard
+Disallow: /dashboard/rotate-key
+Disallow: /payment/
+Disallow: /api/v1/
+Disallow: /api/screenshot
+Disallow: /debug/
+
+# Block query strings that aren't useful to index
+Disallow: /*?payment=*
+Disallow: /*?session_id=*
+
+# Sitemap location
+Sitemap: https://siteshot.onexportalhq.com/sitemap.xml
+
+# Crawl delay (be polite)
+Crawl-delay: 10

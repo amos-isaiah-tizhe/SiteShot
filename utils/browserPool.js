@@ -1,0 +1,113 @@
+const puppeteer = require('puppeteer-extra');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+const logger = require('./logger');
+
+puppeteer.use(StealthPlugin());
+
+const isWindows = process.platform === 'win32';
+const CHROME_PATH = process.env.PUPPETEER_EXECUTABLE_PATH ||
+  (isWindows
+    ? 'C:\\Users\\USER\\.cache\\puppeteer\\chrome\\win64-150.0.7871.24\\chrome-win64\\chrome.exe'
+    : '/opt/render/project/.cache/puppeteer/chrome/linux-150.0.7871.24/chrome-linux64/chrome');
+
+const LAUNCH_ARGS = [
+  '--no-sandbox',
+  '--disable-setuid-sandbox',
+  '--disable-dev-shm-usage',
+  '--disable-blink-features=AutomationControlled',
+  '--disable-gpu',
+  '--disable-software-rasterizer',
+  '--disable-dev-tools',
+  '--no-first-run',
+  '--no-zygote',
+  '--single-process',
+];
+
+const USER_AGENTS = [
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:125.0) Gecko/20100101 Firefox/125.0',
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15',
+];
+
+let browserInstance = null;
+let browserLaunchPromise = null;
+
+async function getBrowser() {
+  // Return existing healthy browser
+  if (browserInstance) {
+    try {
+      await browserInstance.version(); // health check
+      return browserInstance;
+    } catch {
+      logger.warn('Browser instance crashed, relaunching...');
+      browserInstance = null;
+    }
+  }
+
+  // Prevent multiple simultaneous launches
+  if (browserLaunchPromise) return browserLaunchPromise;
+
+  browserLaunchPromise = puppeteer.launch({
+    headless: 'new',
+    executablePath: CHROME_PATH,
+    args: LAUNCH_ARGS,
+  }).then(browser => {
+    browserInstance = browser;
+    browserLaunchPromise = null;
+    logger.info('Browser instance launched');
+
+    // Auto-restart if browser crashes
+    browser.on('disconnected', () => {
+      logger.warn('Browser disconnected, will relaunch on next request');
+      browserInstance = null;
+    });
+
+    return browser;
+  }).catch(err => {
+    browserLaunchPromise = null;
+    throw err;
+  });
+
+  return browserLaunchPromise;
+}
+
+async function createPage(width = 1440, height = 900) {
+  const browser = await getBrowser();
+  const page = await browser.newPage();
+
+  // Stealth settings
+  await page.setUserAgent(USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)]);
+  await page.evaluateOnNewDocument(() => {
+    Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+  });
+  await page.setExtraHTTPHeaders({ 'Accept-Language': 'en-US,en;q=0.9' });
+  await page.setViewport({ width, height, deviceScaleFactor: 1 });
+
+  // Request interception
+  try {
+    await page.setRequestInterception(true);
+    page.on('request', (interceptedReq) => {
+      if (!interceptedReq.isInterceptResolutionHandled()) {
+        const blocked = ['websocket', 'other'];
+        blocked.includes(interceptedReq.resourceType())
+          ? interceptedReq.abort()
+          : interceptedReq.continue();
+      }
+    });
+  } catch (err) {
+    logger.warn('Request interception unavailable:', err.message);
+  }
+
+  return page;
+}
+
+async function closeBrowser() {
+  if (browserInstance) {
+    await browserInstance.close();
+    browserInstance = null;
+    logger.info('Browser instance closed');
+  }
+}
+
+module.exports = { getBrowser, createPage, closeBrowser, USER_AGENTS, CHROME_PATH, LAUNCH_ARGS };

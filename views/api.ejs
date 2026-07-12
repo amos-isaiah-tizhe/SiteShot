@@ -1,0 +1,164 @@
+<%- include('partials/header') %>
+  <div class="container section-py">
+    <div class="page-header" style="margin-bottom:3rem">
+      <p class="eyebrow">Developer API</p>
+      <h1>Screenshots, programmatically.</h1>
+      <p>A simple, REST-first API to capture, render and store website screenshots from your stack.</p>
+    </div>
+
+    <!-- GET Query String API -->
+    <div class="api-section" style="margin-bottom:3rem">
+      <h2 style="margin-bottom:1rem">Quick URL API</h2>
+      <p style="margin-bottom:1.5rem;color: var(--color-text-muted);">No authentication needed. Just build a URL and
+        drop it in an <code>&lt;img&gt;</code> tag, browser, or HTTP client to get a screenshot back instantly.</p>
+
+      <div class="card api-card" style="margin-bottom:1.5rem">
+        <div class="api-label">Endpoint</div>
+        <div class="code-inline">GET https://siteshot.onexportalhq.com/api/screenshot</div>
+
+        <div class="api-label" style="margin-top:1.5rem">Query Parameters</div>
+        <table style="width:100%;border-collapse:collapse;margin-top:0.5rem;font-size:0.9rem">
+          <thead>
+            <tr style="border-bottom:1px solid var(--border)">
+              <th style="text-align:left;padding:0.5rem 1rem 0.5rem 0">Param</th>
+              <th style="text-align:left;padding:0.5rem 1rem">Type</th>
+              <th style="text-align:left;padding:0.5rem 0">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:0.5rem 1rem 0.5rem 0"><code>url</code></td>
+              <td style="padding:0.5rem 1rem">string</td>
+              <td style="padding:0.5rem 0">Required. The page URL to screenshot.</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:0.5rem 1rem 0.5rem 0"><code>device</code></td>
+              <td style="padding:0.5rem 1rem">string</td>
+              <td style="padding:0.5rem 0">Preset: <code>desktop</code>, <code>tablet</code>, or <code>mobile</code>.
+                Overrides width &amp; height.</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:0.5rem 1rem 0.5rem 0"><code>width</code></td>
+              <td style="padding:0.5rem 1rem">number</td>
+              <td style="padding:0.5rem 0">Viewport width in px. Default: <code>1440</code>.</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:0.5rem 1rem 0.5rem 0"><code>height</code></td>
+              <td style="padding:0.5rem 1rem">number</td>
+              <td style="padding:0.5rem 0">Viewport height in px. Default: <code>900</code>.</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:0.5rem 1rem 0.5rem 0"><code>fullPage</code></td>
+              <td style="padding:0.5rem 1rem">boolean</td>
+              <td style="padding:0.5rem 0">Capture full scrollable page. Default: <code>false</code>.</td>
+            </tr>
+            <tr>
+              <td style="padding:0.5rem 1rem 0.5rem 0"><code>format</code></td>
+              <td style="padding:0.5rem 1rem">string</td>
+              <td style="padding:0.5rem 0"><code>jpg</code>, <code>png</code>, or <code>pdf</code>. Default:
+                <code>jpg</code>.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card api-card">
+        <div class="api-label api-title" id="apiExamples">Examples</div>
+
+        <div class="api-example-grid">
+
+          <div class="api-example">
+            <div class="api-label">Desktop (default)</div>
+            <div class="code-block">
+              https://siteshot.onexportalhq.com/api/screenshot?url=https://google.com&device=desktop
+            </div>
+          </div>
+
+          <div class="api-example">
+            <div class="api-label">Tablet</div>
+            <div class="code-block">
+              https://siteshot.onexportalhq.com/api/screenshot?url=https://google.com&device=tablet
+            </div>
+          </div>
+
+          <div class="api-example">
+            <div class="api-label">Mobile</div>
+            <div class="code-block">
+              https://siteshot.onexportalhq.com/api/screenshot?url=https://google.com&device=mobile
+            </div>
+          </div>
+
+          <div class="api-example">
+            <div class="api-label">Custom size</div>
+            <div class="code-block">
+              https://siteshot.onexportalhq.com/api/screenshot?url=https://google.com&width=1280&height=720
+            </div>
+          </div>
+
+          <div class="api-example">
+            <div class="api-label">Full page PNG</div>
+            <div class="code-block">
+              https://siteshot.onexportalhq.com/api/screenshot?url=https://google.com&fullPage=true&format=png
+            </div>
+          </div>
+
+          <div class="api-example">
+            <div class="api-label">Use in an &lt;img&gt; tag</div>
+            <div class="code-block">
+              &lt;img src="https://siteshot.onexportalhq.com/api/screenshot?url=https://google.com&device=mobile" /&gt;
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- POST REST API -->
+      <div class="api-section" style="margin-bottom:3rem">
+        <h2 style="padding-bottom:1rem; padding-top:1rem">REST API</h2>
+        <p style="margin-bottom:1.5rem; color: var(--color-text-muted);">For server-to-server integrations with
+          authentication, rate limiting, and structured JSON responses.</p>
+
+        <div class="api-grid">
+          <div class="card api-card">
+            <div class="api-label">Endpoint</div>
+            <div class="code-inline">POST https://siteshot.onexportalhq.com/api/v1/screenshot</div>
+            <div class="api-label" style="margin-top:1.5rem">Request body</div>
+            <div class="code-block">{
+              "url": "https://example.com",
+              "width": 1280,
+              "height": 1024,
+              "fullPage": true,
+              "format": "jpg"
+              }</div>
+          </div>
+          <div class="card api-card">
+            <div class="api-label">Response</div>
+            <div class="code-block">{
+              "success": true,
+              "imageUrl": "https://siteshot.onexportalhq.com/shots/abc123.jpg",
+              "meta": { "width": 1280, "height": 1024, "tookMs": 1842 }
+              }</div>
+            <div class="api-label" style="margin-top:1.5rem">cURL</div>
+            <div class="code-block">curl -X POST https://siteshot.onexportalhq.com/api/v1/screenshot \
+              -H "Authorization: Bearer YOUR_API_KEY" \
+              -H "Content-Type: application/json" \
+              -d '{"url":"https://example.com","width":1280,"height":1024,"fullPage":true,"format":"jpg"}'</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="api-specs">
+        <div class="card api-spec-card">
+          <h3>Authentication</h3>
+          <p>Bearer-token API keys scoped per workspace. Rotate keys at any time from your dashboard.</p>
+        </div>
+        <div class="card api-spec-card">
+          <h3>Rate limits</h3>
+          <p>Free: 60 req/hour. Pro: 1,000 req/hour. Business: custom. Burst allowed via queue.</p>
+        </div>
+        <div class="card api-spec-card">
+          <h3>SLA</h3>
+          <p>99.9% uptime on Pro and Business. Status and webhooks available out of the box.</p>
+        </div>
+      </div>
+    </div>
+    <%- include('partials/footer') %>
