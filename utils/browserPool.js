@@ -51,19 +51,18 @@ const LAUNCH_ARGS = [
   '--no-sandbox',
   '--disable-setuid-sandbox',
   '--disable-dev-shm-usage',
-  '--disable-blink-features=AutomationControlled',
   '--disable-gpu',
-  '--disable-software-rasterizer',
-  '--disable-dev-tools',
-  '--no-first-run',
-  '--no-zygote',
-  '--single-process',
+  '--disable-blink-features=AutomationControlled',
   '--disable-extensions',
   '--disable-background-networking',
   '--disable-background-timer-throttling',
   '--disable-backgrounding-occluded-windows',
   '--disable-renderer-backgrounding',
   '--disable-ipc-flooding-protection',
+  '--no-first-run',
+  '--no-zygote',
+  '--mute-audio',
+  '--hide-scrollbars',
 ];
 
 const USER_AGENTS = [
@@ -126,8 +125,7 @@ async function createPage(width = 1440, height = 900) {
   const browser = await getBrowser();
 
   // Use existing blank page if available to avoid bringToFront conflict
-  const pages   = await browser.pages();
-  const page    = pages.length > 0 ? pages[0] : await browser.newPage();
+  const page = await browser.newPage();
 
   const isPerRequest = !isWindows && process.env.NODE_ENV === 'production';
   page._browserInstance = browser;
